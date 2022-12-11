@@ -307,7 +307,7 @@ country=$snnf
 fi
 g4=$country
 WARPIPv4Status=$(curl -s4 https://www.cloudflare.com/cdn-cgi/trace | grep warp | cut -d= -f2) 
-read -rsp "WARPIPv4Status=$WARPIPv4Status"
+
 case ${WARPIPv4Status} in 
 plus) 
 WARPIPv4Status=$(green "WARP+PLUS已开启，当前IPV4地址：$v44 ，IP所在区域：$g4 ") 
