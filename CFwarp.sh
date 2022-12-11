@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+﻿#!/bin/bash
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
 
@@ -81,12 +81,21 @@ green " wget 已安装，继续 "
 fi 
 sleep 1s
 yellow " 等待2秒……检测vps中……"
-AE="阿联酋";AU="澳大利亚";BR="巴西";CA="加拿大";CH="瑞士";CL="智利";CN="中国";DE="德国";ES="西班牙";FI="芬兰";FR="法国";HK="香港";ID="印尼";IE="爱尔兰";IL="以色列";IN="印度";IT="意大利";JP="日本";KR="韩国";MY="马来西亚";NL="荷兰";NZ="新西兰";PH="菲律宾";RU="俄罗斯";SA="沙特";SE="瑞典";SG="新加坡";TW="台湾";UK="英国";US="美国";VN="越南";ZA="南非"
+UA_Browser="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36"
 
-v44=`wget -T1 -t1 -qO- -4 ip.gs`
+v44=$(curl -s4m6 ip.p3terx.com -k | sed -n 1p)
 if [[ -n ${v44} ]]; then
-gj4=`curl -4 https://ip.gs/country-iso -k`
-g4=$(eval echo \$$gj4)
+isp4a=`curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v4?lang=zh-CN -k | cut -f13 -d ":" | cut -f2 -d '"'`
+isp4b=`curl -sm6 --user-agent "${UA_Browser}" https://api.ip.sb/geoip/$v4 -k | awk -F "isp" '{print $2}' | awk -F "offset" '{print $1}' | sed "s/[,\":]//g"`
+[[ -n $isp4a ]] && isp4=$isp4a || isp4=$isp4b
+nonf=$(curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v4?lang=zh-CN -k | cut -f2 -d"," | cut -f4 -d '"')
+snnf=$(curl -s4m6 ip.p3terx.com -k | sed -n 2p | awk '{print $3}')
+if [[ -n $nonf ]]; then
+country=$nonf
+else
+country=$snnf
+fi
+g4=$country
 WARPIPv4Status=$(curl -s4 https://www.cloudflare.com/cdn-cgi/trace | grep warp | cut -d= -f2) 
 case ${WARPIPv4Status} in 
 plus) 
@@ -102,10 +111,19 @@ else
 WARPIPv4Status=$(red "不存在IPV4地址 ")
 fi 
 
-v66=`wget -T1 -t1 -qO- -6 ip.gs`
+v66=$(curl -s6m6 ip.p3terx.com -k | sed -n 1p)
 if [[ -n ${v66} ]]; then 
-gj6=`curl -6 https://ip.gs/country-iso -k`
-g6=$(eval echo \$$gj6)
+isp6a=`curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v6?lang=zh-CN -k | cut -f13 -d":" | cut -f2 -d '"'`
+isp6b=`curl -sm6 --user-agent "${UA_Browser}" https://api.ip.sb/geoip/$v6 -k | awk -F "isp" '{print $2}' | awk -F "offset" '{print $1}' | sed "s/[,\":]//g"`
+[[ -n $isp6a ]] && isp6=$isp6a || isp6=$isp6b
+nonf=$(curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v6?lang=zh-CN -k | cut -f2 -d"," | cut -f4 -d '"')
+snnf=$(curl -s6m6 ip.p3terx.com -k | sed -n 2p | awk '{print $3}')
+if [[ -n $nonf ]]; then
+country=$nonf
+else
+country=$snnf
+fi
+g6=$country
 WARPIPv6Status=$(curl -s6 https://www.cloudflare.com/cdn-cgi/trace | grep warp | cut -d= -f2) 
 case ${WARPIPv6Status} in 
 plus) 
@@ -208,12 +226,12 @@ apt -y --no-install-recommends install net-tools iproute2 openresolv dnsutils wi
 fi
 	
 if [[ ${bit} == "x86_64" ]]; then
-wget -N https://cdn.jsdelivr.net/gh/johnyterry/CFwarp/wgcf_2.2.9_amd64 -O /usr/local/bin/wgcf && chmod +x /usr/local/bin/wgcf         
+wget -N https://cdn.jsdelivr.net/gh/numia090/CF/wgcf_2.2.9_amd64 -O /usr/local/bin/wgcf && chmod +x /usr/local/bin/wgcf         
 elif [[ ${bit} == "aarch64" ]]; then
-wget -N https://cdn.jsdelivr.net/gh/johnyterry/CFwarp/wgcf_2.2.9_arm64 -O /usr/local/bin/wgcf && chmod +x /usr/local/bin/wgcf
+wget -N https://cdn.jsdelivr.net/gh/numia090/CF/wgcf_2.2.9_arm64 -O /usr/local/bin/wgcf && chmod +x /usr/local/bin/wgcf
 fi
 if [[ ${vi} == "lxc" || ${vi} == "openvz" ]]; then
-wget -N https://cdn.jsdelivr.net/gh/johnyterry/CFwarp/wireguard-go -O /usr/bin/wireguard-go && chmod +x /usr/bin/wireguard-go
+wget -N https://cdn.jsdelivr.net/gh/numia090/CF/wireguard-go -O /usr/bin/wireguard-go && chmod +x /usr/bin/wireguard-go
 fi
 
 mkdir -p /etc/wireguard/ >/dev/null 2>&1
@@ -226,12 +244,8 @@ echo | wgcf register
 done
 
 yellow "继续使用原WARP账户请按回车跳过 \n启用WARP+PLUS账户，请复制WARP+的按键许可证秘钥(26个字符)后回车"
-read -p "按键许可证秘钥(26个字符):" ID
-if [[ -n $ID ]]; then
-sed -i "s/license_key.*/license_key = \"$ID\"/g" wgcf-account.toml
-wgcf update
-green "启用WARP+PLUS账户中，如上方显示：400 Bad Request，则使用原WARP账户,相关原因请看本项目Github说明" 
-fi
+#read -p "按键许可证秘钥(26个字符):" ID
+
 wgcf generate
 
 echo $ABC1 | sh
@@ -243,14 +257,14 @@ mv -f wgcf-profile.conf /etc/wireguard/wgcf.conf >/dev/null 2>&1
 mv -f wgcf-account.toml /etc/wireguard/wgcf-account.toml >/dev/null 2>&1
 
 wg-quick up wgcf >/dev/null 2>&1
-v4=$(wget -T1 -t1 -qO- -4 ip.gs)
-v6=$(wget -T1 -t1 -qO- -6 ip.gs)
+v6=$(curl -s6m6 ip.p3terx.com -k | sed -n 1p)
+v4=$(curl -s4m6 ip.p3terx.com -k | sed -n 1p)
 until [[ -n $v4 || -n $v6 ]]
 do
 wg-quick down wgcf >/dev/null 2>&1
 wg-quick up wgcf >/dev/null 2>&1
-v4=$(wget -T1 -t1 -qO- -4 ip.gs)
-v6=$(wget -T1 -t1 -qO- -6 ip.gs)
+v6=$(curl -s6m6 ip.p3terx.com -k | sed -n 1p)
+v4=$(curl -s4m6 ip.p3terx.com -k | sed -n 1p)
 done
 
 systemctl enable wg-quick@wgcf >/dev/null 2>&1
@@ -258,7 +272,7 @@ wg-quick down wgcf >/dev/null 2>&1
 systemctl start wg-quick@wgcf
 
 yellow "添加重启VPS时，自动修复WARP功能"
-wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/johnyterry/CFwarp/sip.sh >/dev/null 2>&1
+wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/numia090/CF/sip.sh >/dev/null 2>&1
 ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 if [ ${release} = "Centos" ]; then  
 yum install vixie-cron crontabs >/dev/null 2>&1
@@ -279,11 +293,21 @@ systemctl restart cron.service
 fi
 green "设置完成"
 
-v44=`wget -T1 -t1 -qO- -4 ip.gs`
+v44=$(curl -s4m6 ip.p3terx.com -k | sed -n 1p)
 if [[ -n ${v44} ]]; then
-gj4=`curl -4 https://ip.gs/country-iso -k`
-g4=$(eval echo \$$gj4)
+isp4a=`curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v4?lang=zh-CN -k | cut -f13 -d ":" | cut -f2 -d '"'`
+isp4b=`curl -sm6 --user-agent "${UA_Browser}" https://api.ip.sb/geoip/$v4 -k | awk -F "isp" '{print $2}' | awk -F "offset" '{print $1}' | sed "s/[,\":]//g"`
+[[ -n $isp4a ]] && isp4=$isp4a || isp4=$isp4b
+nonf=$(curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v4?lang=zh-CN -k | cut -f2 -d"," | cut -f4 -d '"')
+snnf=$(curl -s4m6 ip.p3terx.com -k | sed -n 2p | awk '{print $3}')
+if [[ -n $nonf ]]; then
+country=$nonf
+else
+country=$snnf
+fi
+g4=$country
 WARPIPv4Status=$(curl -s4 https://www.cloudflare.com/cdn-cgi/trace | grep warp | cut -d= -f2) 
+read -rsp "WARPIPv4Status=$WARPIPv4Status"
 case ${WARPIPv4Status} in 
 plus) 
 WARPIPv4Status=$(green "WARP+PLUS已开启，当前IPV4地址：$v44 ，IP所在区域：$g4 ") 
@@ -298,10 +322,19 @@ else
 WARPIPv4Status=$(red "不存在IPV4地址 ")
 fi 
 
-v66=`wget -T1 -t1 -qO- -6 ip.gs`
+v66=$(curl -s6m6 ip.p3terx.com -k | sed -n 1p)
 if [[ -n ${v66} ]]; then 
-gj6=`curl -6 https://ip.gs/country-iso -k`
-g6=$(eval echo \$$gj6)
+isp6a=`curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v6?lang=zh-CN -k | cut -f13 -d":" | cut -f2 -d '"'`
+isp6b=`curl -sm6 --user-agent "${UA_Browser}" https://api.ip.sb/geoip/$v6 -k | awk -F "isp" '{print $2}' | awk -F "offset" '{print $1}' | sed "s/[,\":]//g"`
+[[ -n $isp6a ]] && isp6=$isp6a || isp6=$isp6b
+nonf=$(curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v6?lang=zh-CN -k | cut -f2 -d"," | cut -f4 -d '"')
+snnf=$(curl -s6m6 ip.p3terx.com -k | sed -n 2p | awk '{print $3}')
+if [[ -n $nonf ]]; then
+country=$nonf
+else
+country=$snnf
+fi
+g6=$country
 WARPIPv6Status=$(curl -s6 https://www.cloudflare.com/cdn-cgi/trace | grep warp | cut -d= -f2) 
 case ${WARPIPv6Status} in 
 plus) 
@@ -321,10 +354,10 @@ green "安装结束，当前WARP及IP状态如下 "
 blue "WARP状态 + IPv4地址 + IP所在区域: ${WARPIPv4Status}"
 blue "WARP状态 + IPv6地址 + IP所在区域: ${WARPIPv6Status}"
 white "============================================================================================="
-white "返回主菜单，请按任意键"
-white "退出脚本，请按Ctrl+C"
-char=$(get_char)
-bash CFwarp.sh
+#white "返回主菜单，请按任意键"
+#white "退出脚本，请按Ctrl+C"
+#char=$(get_char)
+#bash CFwarp.sh
 }
 
 function warpip(){
@@ -347,7 +380,7 @@ python3 wp.py
 }
 
 function upcore(){
-wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/johnyterry/CFwarp/ucore.sh && chmod +x ucore.sh && ./ucore.sh
+wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/numia090/CF/ucore.sh && chmod +x ucore.sh && ./ucore.sh
 }
 
 function iptables(){
@@ -432,13 +465,13 @@ bash CFwarp.sh
 }
 
 function up4(){
-wget -N --no-check-certificate https://raw.githubusercontent.com/johnyterry/CFwarp/main/CFwarp.sh && chmod +x CFwarp.sh && ./CFwarp.sh
+wget -N --no-check-certificate https://raw.githubusercontent.com/numia090/CF/main/CFwarp.sh && chmod +x CFwarp.sh && ./CFwarp.sh
 }
 
 function start_menu(){
 systemctl stop wg-quick@wgcf >/dev/null 2>&1
 v44=`ip route get 162.159.192.1 2>/dev/null | grep -oP 'src \K\S+'`
-v66=`wget -T1 -t1 -qO- -6 ip.gs`
+v66=$(curl -s6m6 ip.p3terx.com -k | sed -n 1p)
 if [[ -n ${v44} && -n ${v66} ]]; then 
 clear
 red " 切记：进入脚本快捷方式 bash CFwarp.sh "    
@@ -464,7 +497,10 @@ white " ========================================================================
 red " 0. 退出脚本 "
 Print_ALL_Status_menu
 echo
-read -p "请输入数字:" menuNumberInput
+read -p "请输入数字(默认为5):" menuNumberInput
+if [[ ${menuNumberInput} == "" ]]; then
+  menuNumberInput=5
+fi
 case "$menuNumberInput" in     
  1 ) iptables;;
  2 ) upcore;;
@@ -507,7 +543,10 @@ white " ========================================================================
 red " 0. 退出脚本 "
 Print_ALL_Status_menu
 echo
-read -p "请输入数字:" menuNumberInput
+read -p "请输入数字(默认为5):" menuNumberInput
+if [[ ${menuNumberInput} == "" ]]; then
+  menuNumberInput=5
+fi
 case "$menuNumberInput" in     
  1 ) iptables;;
  2 ) upcore;;
@@ -550,7 +589,10 @@ white " ========================================================================
 red " 0. 退出脚本 "
 Print_ALL_Status_menu
 echo
-read -p "请输入数字:" menuNumberInput
+read -p "请输入数字(默认为5):" menuNumberInput
+if [[ ${menuNumberInput} == "" ]]; then
+  menuNumberInput=5
+fi
 case "$menuNumberInput" in     
  1 ) iptables;;
  2 ) upcore;;
